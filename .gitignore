@@ -1,0 +1,21 @@
+# Binarios compilados
+*.exe
+*.out
+*.o
+*.obj
+
+# Datos de puntos generados al vuelo por el notebook (regenerables, no son el entregable)
+*_data.csv
+*_results.csv
+
+# OJO: proyectos/apertura-dbscan/experimentos/resultados.csv SÍ se entrega —
+# no lo excluyas; es el archivo con los datos de los experimentos que pide el PDF.
+
+# Entornos / cachés
+__pycache__/
+.ipynb_checkpoints/
+.vscode/ipch/
+
+# Sistema
+.DS_Store
+Thumbs.db
