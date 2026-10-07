@@ -1,0 +1,13 @@
+# <Nombre del tema>
+
+## Conceptos clave
+...
+
+## Comparaciones / tablas
+...
+
+## Código de ejemplo visto en clase
+...
+
+## Dudas resueltas en conversación con Claude
+...
