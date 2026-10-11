@@ -1,0 +1,13 @@
+{
+  // Python: usar siempre el entorno virtual del repo (notebook + scripts de experimentos)
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "jupyter.notebookFileRoot": "${fileDirname}",
+
+  // C++: los binarios compilados (*.out) no aparecen en el explorador
+  "files.exclude": {
+    "**/*.out": true,
+    "**/*.out.dSYM": true
+  },
+  "C_Cpp.default.cppStandard": "c++17"
+}

@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "name": "Mac (clang + libomp)",
+      "compilerPath": "/usr/bin/clang++",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/usr/local/opt/libomp/include"
+      ],
+      "defines": ["_OPENMP"],
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "macos-clang-x64"
+    }
+  ],
+  "version": 4
+}

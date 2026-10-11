@@ -1,0 +1,54 @@
+{
+  // Apple clang no acepta "-fopenmp" directo: hay que pasarlo al preprocesador
+  // con -Xpreprocessor y enlazar a mano la libreria libomp de Homebrew.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compilar archivo actual (OpenMP)",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-std=c++17", "-O2",
+        "-Xpreprocessor", "-fopenmp",
+        "-I/usr/local/opt/libomp/include",
+        "-L/usr/local/opt/libomp/lib", "-lomp",
+        "${file}",
+        "-o", "${fileDirname}/${fileBasenameNoExtension}.out"
+      ],
+      "options": { "cwd": "${fileDirname}" },
+      "problemMatcher": ["$gcc"],
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "Compilar para depurar (OpenMP, -g)",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-std=c++17", "-g", "-O0",
+        "-Xpreprocessor", "-fopenmp",
+        "-I/usr/local/opt/libomp/include",
+        "-L/usr/local/opt/libomp/lib", "-lomp",
+        "${file}",
+        "-o", "${fileDirname}/${fileBasenameNoExtension}.out"
+      ],
+      "options": { "cwd": "${fileDirname}" },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Compilar y correr archivo actual",
+      "type": "shell",
+      "dependsOn": "Compilar archivo actual (OpenMP)",
+      "command": "${fileDirname}/${fileBasenameNoExtension}.out ${input:argumentos}",
+      "options": { "cwd": "${fileDirname}" },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "argumentos",
+      "type": "promptString",
+      "description": "Argumentos del programa (vacío si no lleva). DBSCAN: entrada.csv salida.csv eps min_samples",
+      "default": ""
+    }
+  ]
+}

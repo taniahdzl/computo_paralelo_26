@@ -1,0 +1,7 @@
+# Entorno de Python del repo (python3 -m venv .venv && .venv/bin/pip install -r requirements.txt)
+numpy==2.5.4
+matplotlib==3.11.2
+scikit-learn==1.9.1
+pandas==3.0.6
+ipykernel==7.4.0   # para correr los notebooks en VS Code
+pymupdf==1.28.2     # para leer/extraer texto de los PDFs de clase

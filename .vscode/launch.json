@@ -1,0 +1,18 @@
+{
+  // F5 = compilar con -g y abrir el depurador (lldb) sobre el archivo actual,
+  // para ir linea por linea viendo el valor de cada variable.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Depurar archivo actual",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}/${fileBasenameNoExtension}.out",
+      "args": [],
+      "cwd": "${fileDirname}",
+      "environment": [{ "name": "OMP_NUM_THREADS", "value": "4" }],
+      "MIMode": "lldb",
+      "preLaunchTask": "Compilar para depurar (OpenMP, -g)"
+    }
+  ]
+}

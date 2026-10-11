@@ -8,10 +8,11 @@
 *_data.csv
 *_results.csv
 
-# OJO: proyectos/apertura-dbscan/experimentos/resultados.csv SÍ se entrega —
+# OJO: proyectos/dbscan/experiments/resultados.csv SÍ se entrega —
 # no lo excluyas; es el archivo con los datos de los experimentos que pide el PDF.
 
 # Entornos / cachés
+.venv/
 __pycache__/
 .ipynb_checkpoints/
 .vscode/ipch/
