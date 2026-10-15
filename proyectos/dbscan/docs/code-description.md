@@ -17,7 +17,9 @@ idénticas.
 **Validación:** con 4,000, 20,000 y 80,000 puntos (`eps = 0.03`, `min_samples = 10`), P1 con
 hilos {1, 8, 16, 32} y P2 con los mismos hilos y k ∈ {2, 4, 8, 16, 32, 64} dan **0 etiquetas
 distintas** respecto a la serial. A su vez, la serial da 0 diferencias respecto al DBSCAN de sklearn
-(59, 45 y 34 puntos de ruido, respectivamente).
+(59, 45 y 34 puntos de ruido, respectivamente). Además, el script del experimento volvió a comparar
+las etiquetas contra la serial en las **224 configuraciones paralelas** (n de 20k a 200k), con 0
+diferencias.
 
 ### Cómo se compila (Mac con Intel y libomp de Homebrew)
 
@@ -49,7 +51,8 @@ para el ruido, para buscar un core cercano (Paso 2).
 | `dbscan_serial.cpp:123-141` | Paso 1 | Para cada `i`, cuenta los `j` con `distancia <= eps`, **incluido él mismo** (d(i,i) = 0), igual que `min_samples` en sklearn. Si `vecinos >= min_samples`, es core de 1er orden. Son **n² distancias**. |
 | `dbscan_serial.cpp:143-178` | Paso 2 | Para cada punto que es ruido, busca un core de 1er orden a ≤ eps; si lo encuentra, se reetiqueta y hace `break`. Lee de la **copia fija** `es_core_paso1` y escribe en `es_core` (ver abajo). |
 | `dbscan_serial.cpp:183-195` | Salida | `x,y,label` con `label` 1 o 0, el formato que lee la celda 2 del notebook (p14). |
-| `dbscan_serial.cpp:197-208` | Reporte | Imprime en `stderr` el tiempo y cuántos puntos quedaron como ruido; el script del experimento lee el tiempo de ahí. |
+| `dbscan_serial.cpp:193-204` | Reporte | Imprime en `stderr` el tiempo y cuántos puntos quedaron como ruido; el script del experimento lee el tiempo de ahí. |
+| `dbscan_serial.cpp:206-209` | Liberar memoria | `delete[]` de cada arreglo creado con `new[]` (nota 02 parte A). |
 
 ### Decisión clave: la copia `es_core_paso1`
 La p8 dice que un ruido se reetiqueta si es épsilon-alcanzable desde **un punto core**, entendido
@@ -130,13 +133,13 @@ Todo lo demás (lectura, `distancia`, cronómetro, copia `es_core_paso1`, salida
 
 ### Costo y rendimiento
 Hace las **mismas n² distancias** que la serial. Solo se reparten entre hilos, así que lo más que se
-puede esperar es un speedup cercano al número de **cores físicos** (8). Medición preliminar con
-80,000 puntos (**una sola corrida**; los promedios de 10 corridas van en `experimental-eval.md`):
+puede esperar es un speedup cercano al número de **cores físicos** (8). Resultado del experimento
+(promedio de 10 corridas; el análisis completo está en `experimental-eval.md` §4.1):
 
-| | Serial | P1, 8 hilos | P1, 16 hilos | P1, 32 hilos |
+| n = 200,000 | Serial | P1, 8 hilos | P1, 16 hilos | P1, 32 hilos |
 |---|---|---|---|---|
-| Tiempo (s) | 4.77 | 0.68 | 0.66 | 0.70 |
-| Speedup | 1 | ~7.0 | ~7.2 | ~6.8 |
+| Tiempo (s) | 28.09 | 4.40 | 4.61 | 4.66 |
+| Speedup | 1 | **6.38** | 6.09 | 6.03 |
 
 Pasar de 8 a 16 hilos casi no ayuda: los 16 hilos son 8 cores físicos con *hyper-threading* y el
 trabajo es puro cómputo, así que los dos hilos de un core compiten por las mismas unidades de punto
@@ -231,21 +234,21 @@ conflictos que resolver ni nada que "pegar" al final.
 Cada punto ya no se compara contra los n puntos, sino contra los de su celda más el halo. El total de
 distancias baja aproximadamente de n² a n²/k (un poco más, por el halo y porque los puntos no están
 repartidos parejo). Así que P2 gana por dos razones: **el paralelismo y un algoritmo con menos
-trabajo**. Por eso puede superar al número de cores. Medición preliminar con 80,000 puntos (una
-sola corrida):
+trabajo**. Por eso puede superar al número de cores. Resultado del experimento con n = 200,000
+(speedup contra la serial, promedio de 10 corridas; análisis en `experimental-eval.md` §4.2):
 
 | | k = 2 | k = 4 | k = 8 | k = 16 | k = 32 | k = 64 |
 |---|---|---|---|---|---|---|
-| 1 hilo (s) | 2.79 | 1.82 | 1.14 | 0.89 | 0.72 | 0.59 |
-| 16 hilos (s) | 1.49 | 0.97 | 0.47 | 0.42 | 0.17 | 0.15 |
-| Speedup con 16 hilos | ~3.2 | ~4.9 | ~10 | ~11 | ~28 | ~32 |
+| 1 hilo | 1.71 | 2.70 | 4.17 | 5.28 | 6.59 | 8.23 |
+| 8 hilos | 3.23 | 5.03 | 11.26 | 13.26 | 33.91 | **41.82** |
 
 Limitaciones que se ven en la tabla:
 - **Con k < hilos sobran hilos:** con k = 2 solo hay 2 celdas, así que solo 2 hilos trabajan aunque
-  haya 16. El speedup con 16 hilos (~3.2) apenas es el doble del de 1 hilo.
+  haya 8. El speedup con 8 hilos (3.23) apenas es el doble del de 1 hilo.
 - **Desbalance:** el tiempo de un paso es el de la celda **más cargada**. Con k = 16 la mejora sobre
-  k = 8 es chica. Lo más probable es que un blob caiga casi entero en una celda, pero falta
-  confirmarlo contando los puntos por celda.
+  k = 8 es chica. **Confirmado contando el trabajo por celda** (`experiments/analizar_celdas.py`):
+  con la cuadrícula de 4 × 4, una celda concentra el **37%** del trabajo, más que con k = 8 (34%).
+  Con k = 32 baja a 15%, y por eso el salto grande es de k = 16 a k = 32.
 
 ---
 
@@ -287,3 +290,11 @@ Limitaciones que se ven en la tabla:
     es trabajo que la serial no hace. Dejarlo fuera inflaría el speedup de P2.
 11. **¿Por qué copian las coordenadas del halo a otros arreglos?** Para leer memoria en orden y que el
     compilador vectorice el ciclo. Sin la copia, P2 con k = 2 y 1 hilo era más lenta que la serial.
+12. **¿P2 con 1 hilo ya es 8× más rápida que la serial? ¿Cómo, si no hay paralelismo?** Ese 8× viene
+    de hacer menos distancias: contando, P2 con k = 64 hace n²/8.1 distancias. El paralelismo
+    aporta otro ~5× encima, y 8.2 × 5.1 ≈ 42.
+13. **¿Por qué P2 rinde mejor con 8 hilos que con 16?** El tiempo lo marca la celda más pesada. Con
+    más hilos que cores físicos, el hilo de esa celda puede compartir core por Hyper-Threading e ir
+    más lento. Es una hipótesis: no lo medimos directamente.
+14. **Entonces, ¿P2 paraleliza mejor que P1?** No. P1 aprovecha mejor los hilos (~6.4× contra ~5.1×).
+    P2 gana en el total porque hace mucho menos trabajo.

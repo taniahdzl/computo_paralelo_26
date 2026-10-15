@@ -42,11 +42,12 @@ Hecho: setup de VS Code + `.venv`, `libomp` instalado, versión serial validada 
       `parallel for` sobre las celdas.
 - [x] Validar que P1 y P2 dan exactamente las mismas etiquetas que el serial (4k, 20k, 80k; todos los hilos y k).
 - [x] Script del experimento: `experiments/correr_experimento.py` (+ `generar_datos.py`, `graficar.py`).
-- [ ] Correr el experimento completo (~2,300 corridas, estimado ~1–1.5 h) → `experiments/resultados.csv`.
-- [ ] Gráficas de speedup (P1 y P2 vs serial). Al menos una versión debe pasar de **1.5x**.
-- [ ] `docs/code-description.md`: primer borrador hecho (skill `/documentar-solucion`); leerlo y corregirlo en equipo.
-- [ ] `docs/experimental-eval.md`: experimento, hardware/software, análisis (¿por qué P1 o P2 fue
-      mejor?), uso responsable de IA generativa.
+- [x] Correr el experimento completo (2,320 corridas, 0 diferencias de etiquetas) → `experiments/resultados.csv`.
+- [x] Gráficas de speedup en `experiments/graficas/`. Mejor P1: ~6.4x (8 hilos); mejor P2: ~42x
+      (8 hilos, k = 64, n = 200k). Ambas pasan de 1.5x.
+- [ ] `docs/code-description.md`: actualizado con los resultados finales; leerlo y corregirlo en equipo.
+- [ ] `docs/experimental-eval.md`: borrador completo; leerlo en equipo y **completar los ⚠️ de la
+      sección de IA generativa** (qué partes escribieron ustedes, cómo verificaron).
 - [x] Arreglar `proyectos/dbscan/README.md`: nombres de carpetas/archivos (`parallel/`, `parallel-2/`,
       `docs/code-description.md`, `experiments/`), comando de ejemplo con `eps` y `min_samples`,
       comandos de compilación para Mac. (Nombres del equipo: hecho.)

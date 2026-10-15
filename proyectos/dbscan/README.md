@@ -27,6 +27,7 @@ experiments/
   generar_datos.py               — genera <n>_data.csv igual que el notebook
   correr_experimento.py          — corre todas las configuraciones (reanudable)
   graficar.py                    — gráficas de speedup
+  analizar_celdas.py             — trabajo por celda de P2 (explica su speedup)
   resultados_crudos.csv          — cada corrida
   resultados.csv                 — promedio de 10 repeticiones + speedup
   graficas/                      — PNG de speedup
@@ -62,8 +63,8 @@ $CXX src/parallel-2/dbscan_p2.cpp -o dbscan_p2.out
 
 ## Checklist de entrega (de la rúbrica)
 
-- [ ] Código fuente: serial + P1 + P2
+- [x] Código fuente: serial + P1 + P2
 - [ ] `docs/code-description.md`: explica cada línea + estrategia de paralelización
 - [ ] `docs/experimental-eval.md`: definición del experimento, hardware/software, interpretación de resultados (por qué una versión paralela fue mejor/equivalente a la otra), sección de uso responsable de IA generativa, gráficas, archivo de datos
-- [ ] Al menos una versión paralela con speedup > 1.5 (si no, penalización de 50%)
+- [x] Al menos una versión paralela con speedup > 1.5 (si no, penalización de 50%)
 - [ ] Ambos integrantes pueden explicar a detalle cualquier parte del código (examen en vivo)
