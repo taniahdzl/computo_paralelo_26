@@ -304,6 +304,6 @@ Limitaciones que se ven en la tabla:
     lanza una excepción. Lo probamos en `notebooks/prueba_dataset.ipynb`: dan las mismas etiquetas
     que el archivo limpio.
 16. **¿Cómo saben que funciona con datos que no sean los del experimento?** `prueba_dataset.ipynb`
-    corre las tres versiones sobre 21 datasets distintos (la receta del notebook del curso con otros
-    `n_points`, `eps` y `min_samples`, otras formas, coordenadas negativas, puntos repetidos, un solo
+    corre las tres versiones sobre 23 datasets distintos (la receta del notebook del curso con otros
+    `n_points`, `eps` y `min_samples`, otras formas, la carita de la portada, coordenadas negativas, puntos repetidos, un solo
     punto…). Todos dan 0 diferencias contra sklearn y entre versiones.
