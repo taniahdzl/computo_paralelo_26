@@ -34,8 +34,21 @@
 #include <cmath>
 #include <omp.h>
 #include <cstdlib>
+#include <cctype>
 
 using namespace std;
+
+// Regresa true si la linea empieza con un numero (digito, signo o punto
+// decimal). leerPuntos() la usa para saltarse las lineas que no son datos:
+// lineas vacias y un encabezado como "x,y" si el CSV trae uno. (El CSV de
+// DBSCAN_noise.ipynb no trae encabezado, pero asi no truena stod si alguien
+// guarda los puntos con pandas, que si lo pone.)
+bool empiezaConNumero(const string& linea) {
+    size_t p = linea.find_first_not_of(" \t");
+    if (p == string::npos) return false;  // linea vacia o solo espacios
+    unsigned char c = linea[p];  // unsigned: isdigit no acepta char negativo
+    return isdigit(c) || c == '-' || c == '+' || c == '.';
+}
 
 // Lee un CSV de dos columnas (x,y) y reserva arreglos dinamicos para
 // almacenar las coordenadas. Devuelve el numero de puntos leidos por
@@ -51,7 +64,7 @@ void leerPuntos(const string& ruta, double*& x, double*& y, int& n_points) {
     string linea;
     n_points = 0;
     while (getline(archivo, linea)) {
-        if (!linea.empty()) n_points++;
+        if (empiezaConNumero(linea)) n_points++;
     }
 
     x = new double[n_points];
@@ -63,7 +76,7 @@ void leerPuntos(const string& ruta, double*& x, double*& y, int& n_points) {
 
     int i = 0;
     while (getline(archivo, linea)) {
-        if (linea.empty()) continue;
+        if (!empiezaConNumero(linea)) continue;
         stringstream ss(linea);
         string valor;
 

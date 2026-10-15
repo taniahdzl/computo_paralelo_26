@@ -45,6 +45,8 @@ Hecho: setup de VS Code + `.venv`, `libomp` instalado, versión serial validada 
 - [x] Correr el experimento completo (2,320 corridas, 0 diferencias de etiquetas) → `experiments/resultados.csv`.
 - [x] Gráficas de speedup en `experiments/graficas/`. Mejor P1: ~6.4x (8 hilos); mejor P2: ~42x
       (8 hilos, k = 64, n = 200k). Ambas pasan de 1.5x.
+- [x] `notebooks/prueba_dataset.ipynb`: prueba con el CSV del profesor (poner la ruta en `RUTA_CSV`
+      y *Run All*) + 21 datasets raros; todos pasan. `leerPuntos` ya acepta encabezado y líneas vacías.
 - [ ] `docs/code-description.md`: actualizado con los resultados finales; leerlo y corregirlo en equipo.
 - [ ] `docs/experimental-eval.md`: borrador completo; leerlo en equipo y **completar los ⚠️ de la
       sección de IA generativa** (qué partes escribieron ustedes, cómo verificaron).

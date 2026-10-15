@@ -43,16 +43,17 @@ para el ruido, para buscar un core cercano (Paso 2).
 
 | Líneas | Bloque | Qué hace y por qué |
 |---|---|---|
-| `dbscan_serial.cpp:42-82` | `leerPuntos` | Lee el CSV en **dos pasadas**: la primera cuenta las líneas para reservar `x` y `y` del tamaño exacto con `new double[n]` (arreglos dinámicos, nota 02 parte A, p3–p13); la segunda parsea `x,y` separando por la coma. |
-| `dbscan_serial.cpp:85-89` | `distancia` | Distancia euclidiana de la p5: `sqrt(dx² + dy²)`. Es `inline` para que el compilador la pegue dentro del ciclo y no pague una llamada a función miles de millones de veces. |
-| `dbscan_serial.cpp:93-102` | Argumentos | `argv` → ruta de entrada, de salida, `eps` (`atof`) y `min_samples` (`atoi`) (p14 de OpenMP). |
-| `dbscan_serial.cpp:110-113` | `es_core` | Un `bool` por punto: `true` = core (de 1er o 2º orden), `false` = ruido. El proyecto solo pide ruido o no ruido, así que no hace falta un id de cluster. |
-| `dbscan_serial.cpp:121` | Cronómetro | `omp_get_wtime()` **después** de leer el archivo: solo se mide el algoritmo, que es lo que se paraleliza. Se usa el mismo reloj en las tres versiones. |
-| `dbscan_serial.cpp:123-141` | Paso 1 | Para cada `i`, cuenta los `j` con `distancia <= eps`, **incluido él mismo** (d(i,i) = 0), igual que `min_samples` en sklearn. Si `vecinos >= min_samples`, es core de 1er orden. Son **n² distancias**. |
-| `dbscan_serial.cpp:143-178` | Paso 2 | Para cada punto que es ruido, busca un core de 1er orden a ≤ eps; si lo encuentra, se reetiqueta y hace `break`. Lee de la **copia fija** `es_core_paso1` y escribe en `es_core` (ver abajo). |
-| `dbscan_serial.cpp:183-195` | Salida | `x,y,label` con `label` 1 o 0, el formato que lee la celda 2 del notebook (p14). |
-| `dbscan_serial.cpp:193-204` | Reporte | Imprime en `stderr` el tiempo y cuántos puntos quedaron como ruido; el script del experimento lee el tiempo de ahí. |
-| `dbscan_serial.cpp:206-209` | Liberar memoria | `delete[]` de cada arreglo creado con `new[]` (nota 02 parte A). |
+| `dbscan_serial.cpp:40-50` | `empiezaConNumero` | Dice si una línea empieza con dígito, signo o punto decimal. `leerPuntos` la usa para **saltarse las líneas que no son datos**: líneas vacías y un encabezado como `x,y`. El CSV de `DBSCAN_noise.ipynb` no trae encabezado, pero uno guardado con pandas sí, y sin esto `stod("x")` lanzaría una excepción y el programa terminaría. Usa `unsigned char` porque `isdigit` con un `char` negativo (acentos en UTF-8) tiene comportamiento indefinido. **No viene de clase**: lo agregamos al probar con otros formatos (`notebooks/prueba_dataset.ipynb`). |
+| `dbscan_serial.cpp:55-95` | `leerPuntos` | Lee el CSV en **dos pasadas**: la primera cuenta las líneas de datos para reservar `x` y `y` del tamaño exacto con `new double[n]` (arreglos dinámicos, nota 02 parte A, p3–p13); la segunda parsea `x,y` separando por la coma. Las dos pasadas usan el mismo filtro (`empiezaConNumero`), así que cuentan y leen exactamente las mismas líneas. |
+| `dbscan_serial.cpp:98-102` | `distancia` | Distancia euclidiana de la p5: `sqrt(dx² + dy²)`. Es `inline` para que el compilador la pegue dentro del ciclo y no pague una llamada a función miles de millones de veces. |
+| `dbscan_serial.cpp:106-115` | Argumentos | `argv` → ruta de entrada, de salida, `eps` (`atof`) y `min_samples` (`atoi`) (p14 de OpenMP). |
+| `dbscan_serial.cpp:123-126` | `es_core` | Un `bool` por punto: `true` = core (de 1er o 2º orden), `false` = ruido. El proyecto solo pide ruido o no ruido, así que no hace falta un id de cluster. |
+| `dbscan_serial.cpp:134` | Cronómetro | `omp_get_wtime()` **después** de leer el archivo: solo se mide el algoritmo, que es lo que se paraleliza. Se usa el mismo reloj en las tres versiones. |
+| `dbscan_serial.cpp:136-154` | Paso 1 | Para cada `i`, cuenta los `j` con `distancia <= eps`, **incluido él mismo** (d(i,i) = 0), igual que `min_samples` en sklearn. Si `vecinos >= min_samples`, es core de 1er orden. Son **n² distancias**. |
+| `dbscan_serial.cpp:156-191` | Paso 2 | Para cada punto que es ruido, busca un core de 1er orden a ≤ eps; si lo encuentra, se reetiqueta y hace `break`. Lee de la **copia fija** `es_core_paso1` y escribe en `es_core` (ver abajo). |
+| `dbscan_serial.cpp:196-208` | Salida | `x,y,label` con `label` 1 o 0, el formato que lee la celda 2 del notebook (p14). |
+| `dbscan_serial.cpp:206-217` | Reporte | Imprime en `stderr` el tiempo y cuántos puntos quedaron como ruido; el script del experimento lee el tiempo de ahí. |
+| `dbscan_serial.cpp:219-222` | Liberar memoria | `delete[]` de cada arreglo creado con `new[]` (nota 02 parte A). |
 
 ### Decisión clave: la copia `es_core_paso1`
 La p8 dice que un ruido se reetiqueta si es épsilon-alcanzable desde **un punto core**, entendido
@@ -95,10 +96,10 @@ indivisible" de la p11).
 
 | Líneas | Cambio | Por qué |
 |---|---|---|
-| `dbscan_p1.cpp:93-103` | 5º argumento `num_hilos` | El experimento varía los hilos: {1, 8, 16, 32} en esta Mac (p14). |
-| `dbscan_p1.cpp:107` | `omp_set_num_threads(num_hilos)` | Fija el tamaño del equipo de las regiones paralelas que siguen (nota 02, p28). |
-| `dbscan_p1.cpp:138` | `#pragma omp parallel for schedule(static)` en el Paso 1 | Ver la tabla de decisiones. |
-| `dbscan_p1.cpp:173` | `#pragma omp parallel for schedule(dynamic, 64)` en el Paso 2 | Ver la tabla de decisiones. |
+| `dbscan_p1.cpp:106-116` | 5º argumento `num_hilos` | El experimento varía los hilos: {1, 8, 16, 32} en esta Mac (p14). |
+| `dbscan_p1.cpp:120` | `omp_set_num_threads(num_hilos)` | Fija el tamaño del equipo de las regiones paralelas que siguen (nota 02, p28). |
+| `dbscan_p1.cpp:151` | `#pragma omp parallel for schedule(static)` en el Paso 1 | Ver la tabla de decisiones. |
+| `dbscan_p1.cpp:186` | `#pragma omp parallel for schedule(dynamic, 64)` en el Paso 2 | Ver la tabla de decisiones. |
 
 Todo lo demás (lectura, `distancia`, cronómetro, copia `es_core_paso1`, salida) es idéntico.
 
@@ -165,10 +166,10 @@ puntos, comparándolos contra sus puntos más los vecinos cercanos de las celdas
 | 32 | 4 × 8 |
 | 64 | 8 × 8 |
 
-- `cuadricula` (`dbscan_p2.cpp:111-115`) elige la cuadrícula más cuadrada posible: entre más
+- `cuadricula` (`dbscan_p2.cpp:124-128`) elige la cuadrícula más cuadrada posible: entre más
   cuadradas sean las celdas, menos perímetro tienen y más chico es el halo.
-- Se usa el rectángulo que contiene a todos los puntos (`dbscan_p2.cpp:160-167`) y cada punto cae
-  en exactamente **una** celda, que es su partición (`propios`, `dbscan_p2.cpp:173-180`).
+- Se usa el rectángulo que contiene a todos los puntos (`dbscan_p2.cpp:173-180`) y cada punto cae
+  en exactamente **una** celda, que es su partición (`propios`, `dbscan_p2.cpp:186-193`).
 - Se divide el **plano**, no el **orden** de los puntos en el archivo. Si se tomaran "los primeros
   n/k puntos", cada parte seguiría teniendo vecinos regados por todo el plano y habría que comparar
   contra todos de nuevo.
@@ -180,7 +181,7 @@ Esta es la pregunta de la p11.
 celda solo viera sus propios puntos, ese punto perdería vecinos y podría marcarse como ruido por
 error. En el Paso 2 pasa lo mismo: el core que lo rescataría podría estar en la celda vecina.
 
-**La solución: halo, o zona fantasma** (`dbscan_p2.cpp:182-214`). Cada celda tiene dos listas:
+**La solución: halo, o zona fantasma** (`dbscan_p2.cpp:195-227`). Cada celda tiene dos listas:
 
 | Lista | Contenido | Para qué se usa |
 |---|---|---|
@@ -202,13 +203,13 @@ conflictos que resolver ni nada que "pegar" al final.
 
 | Líneas | Bloque | Qué hace |
 |---|---|---|
-| `dbscan_p2.cpp:121-139` | Argumentos | Igual que P1, más `k`. Rechaza una `k` que no sea potencia de 2. |
-| `dbscan_p2.cpp:157` | Cronómetro | Arranca **antes** de armar las particiones: el tiempo incluye todo el trabajo extra de P2. Si no, la comparación con la serial lo favorecería injustamente. |
-| `dbscan_p2.cpp:159-180` | Particiones | Rectángulo global, tamaño de celda y asignación de cada punto a su celda. |
-| `dbscan_p2.cpp:182-214` | Halos | Para cada celda, en paralelo, recorre los n puntos y guarda los que caen en la celda agrandada. Guarda índices y una **copia contigua** de sus coordenadas. |
-| `dbscan_p2.cpp:216-250` | Paso 1 | `parallel for` sobre las **celdas**. Cada punto propio se compara solo contra los candidatos de su celda. |
-| `dbscan_p2.cpp:252-277` | Paso 2 | Copia `es_core_paso1` y otro `parallel for` sobre las celdas, que busca un core de 1er orden entre los candidatos. |
-| `dbscan_p2.cpp:282-289` | Salida | Igual que la serial: `es_core` ya está en el orden original del archivo. |
+| `dbscan_p2.cpp:134-152` | Argumentos | Igual que P1, más `k`. Rechaza una `k` que no sea potencia de 2. |
+| `dbscan_p2.cpp:170` | Cronómetro | Arranca **antes** de armar las particiones: el tiempo incluye todo el trabajo extra de P2. Si no, la comparación con la serial lo favorecería injustamente. |
+| `dbscan_p2.cpp:172-193` | Particiones | Rectángulo global, tamaño de celda y asignación de cada punto a su celda. |
+| `dbscan_p2.cpp:195-227` | Halos | Para cada celda, en paralelo, recorre los n puntos y guarda los que caen en la celda agrandada. Guarda índices y una **copia contigua** de sus coordenadas. |
+| `dbscan_p2.cpp:229-263` | Paso 1 | `parallel for` sobre las **celdas**. Cada punto propio se compara solo contra los candidatos de su celda. |
+| `dbscan_p2.cpp:265-290` | Paso 2 | Copia `es_core_paso1` y otro `parallel for` sobre las celdas, que busca un core de 1er orden entre los candidatos. |
+| `dbscan_p2.cpp:295-302` | Salida | Igual que la serial: `es_core` ya está en el orden original del archivo. |
 
 ### Decisiones de paralelización y su justificación
 
@@ -298,3 +299,11 @@ Limitaciones que se ven en la tabla:
     más lento. Es una hipótesis: no lo medimos directamente.
 14. **Entonces, ¿P2 paraleliza mejor que P1?** No. P1 aprovecha mejor los hilos (~6.4× contra ~5.1×).
     P2 gana en el total porque hace mucho menos trabajo.
+15. **¿Qué pasa si les doy un CSV con encabezado o con líneas vacías?** `empiezaConNumero` se salta
+    toda línea que no empiece con un número, en las dos pasadas de `leerPuntos`. Sin eso, `stod("x")`
+    lanza una excepción. Lo probamos en `notebooks/prueba_dataset.ipynb`: dan las mismas etiquetas
+    que el archivo limpio.
+16. **¿Cómo saben que funciona con datos que no sean los del experimento?** `prueba_dataset.ipynb`
+    corre las tres versiones sobre 21 datasets distintos (la receta del notebook del curso con otros
+    `n_points`, `eps` y `min_samples`, otras formas, coordenadas negativas, puntos repetidos, un solo
+    punto…). Todos dan 0 diferencias contra sklearn y entre versiones.

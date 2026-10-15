@@ -20,6 +20,7 @@ src/
   parallel-2/dbscan_p2.cpp       — P2: cuadrícula de k celdas + halo de ancho eps
 notebooks/
   DBSCAN_noise.ipynb             — genera el CSV de entrada y visualiza el CSV de salida
+  prueba_dataset.ipynb           — corre las 3 versiones con cualquier CSV y una batería de casos raros
 docs/
   code-description.md            — qué hace cada bloque + estrategias de paralelización (P1 y P2)
   experimental-eval.md           — experimento, hardware/software, resultados, IA generativa
