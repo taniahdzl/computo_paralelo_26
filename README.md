@@ -35,20 +35,21 @@ Hecho: setup de VS Code + `.venv`, `libomp` instalado, versión serial validada 
 - [ ] `ejercicios/parallel_fors.cpp`: `parallel for`, `schedule`, `collapse` y los errores comunes (nota 02).
 
 **Proyecto DBSCAN** (entrega: martes 20 de octubre de 2026, en clase)
-- [ ] Decidir si se compara `distancia² <= eps²` (sin `sqrt`). Si se cambia, debe ser igual en las 3 versiones.
-- [ ] P1 (`src/parallel/dbscan_p1.cpp`): `parallel for` en los dos pasos; probar `static` vs `dynamic`.
-- [ ] P2 (`src/parallel-2/dbscan_p2.cpp`): decidir cómo dividir en `k` (propuesta: cuadrícula del
-      plano + franja "halo" de ancho eps para no perder vecinos en las fronteras).
-- [ ] Validar que P1 y P2 dan exactamente las mismas etiquetas que el serial.
-- [ ] Script que corra todo el experimento (k × puntos × hilos {1, 8, 16, 32} × 10 repeticiones) y
-      guarde `experiments/resultados.csv`. Dejarlo corriendo con tiempo: son ~2,300 corridas.
+- [x] Decidido: se queda `sqrt` (fiel a la p5; `dist²` no cambia el speedup). Ver `docs/code-description.md`.
+- [x] P1 (`src/parallel/dbscan_p1.cpp`): `parallel for` en los dos pasos (`static` en Paso 1, `dynamic,64` en Paso 2).
+- [ ] P1: medir `static` vs `dynamic` y distintos chunks en el Paso 2.
+- [x] P2 (`src/parallel-2/dbscan_p2.cpp`): cuadrícula del plano en `k` celdas + halo de ancho eps;
+      `parallel for` sobre las celdas.
+- [x] Validar que P1 y P2 dan exactamente las mismas etiquetas que el serial (4k, 20k, 80k; todos los hilos y k).
+- [x] Script del experimento: `experiments/correr_experimento.py` (+ `generar_datos.py`, `graficar.py`).
+- [ ] Correr el experimento completo (~2,300 corridas, estimado ~1–1.5 h) → `experiments/resultados.csv`.
 - [ ] Gráficas de speedup (P1 y P2 vs serial). Al menos una versión debe pasar de **1.5x**.
-- [ ] `docs/code-description.md`: explicación del código y de las estrategias de paralelización.
+- [ ] `docs/code-description.md`: primer borrador hecho (skill `/documentar-solucion`); leerlo y corregirlo en equipo.
 - [ ] `docs/experimental-eval.md`: experimento, hardware/software, análisis (¿por qué P1 o P2 fue
       mejor?), uso responsable de IA generativa.
-- [ ] Arreglar `proyectos/dbscan/README.md`: nombres de carpetas/archivos (`parallel/`, `parallel-2/`,
+- [x] Arreglar `proyectos/dbscan/README.md`: nombres de carpetas/archivos (`parallel/`, `parallel-2/`,
       `docs/code-description.md`, `experiments/`), comando de ejemplo con `eps` y `min_samples`,
-      comandos de compilación para Mac, y nombres del equipo.
+      comandos de compilación para Mac. (Nombres del equipo: hecho.)
 - [ ] Practicar explicar cada línea de serial, P1 y P2 (si no se puede explicar, −80%).
 
 > Código de prácticas del curso: https://github.com/octavio-gutierrez/computoparalelo2026b
