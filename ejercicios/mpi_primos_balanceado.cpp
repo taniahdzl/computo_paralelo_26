@@ -1,9 +1,3 @@
-// Variante de mpi_primos.cpp con mejor balance de carga (no viene en las diapositivas).
-// Problema del reparto ciclico de la p36: con un numero PAR de procesos, el proceso id solo
-// revisa numeros con la misma paridad que 2+id. Los de id par solo reciben numeros pares, que
-// se descartan en la primera division: la mitad de los procesos casi no trabaja.
-// Arreglo: el 2 se cuenta aparte y solo se reparten los IMPARES: 3+2*id, 3+2*id+2P, ...
-//
 // Compilar:  mpic++ -std=c++17 -O2 mpi_primos_balanceado.cpp -o mpi_primos_balanceado.out
 // Correr:    mpirun -n 8 ./mpi_primos_balanceado.out [N]
 #include <mpi.h>
@@ -13,10 +7,19 @@
 using namespace std;
 
 bool esPrimo(int possible_prime) {
-    int limite = (int)trunc(sqrt((double)possible_prime));
+    int limite =(int)trunc(sqrt((double)possible_prime));
     for (int divisor = 2; divisor <= limite; divisor++)
         if (possible_prime % divisor == 0) return false;
     return true;
+}
+
+// Version serial (la de primos_serial.cpp): un solo proceso revisa todo [2, limite].
+// La corre solo el proceso 0 como linea base para calcular el speedup.
+int contarPrimosSerial(int limite) {
+    int primos = 0;
+    for (int possible_prime = 2; possible_prime <= limite; possible_prime++)
+        if (esPrimo(possible_prime)) primos++;
+    return primos;
 }
 
 int main(int argc, char** argv) {
@@ -27,6 +30,8 @@ int main(int argc, char** argv) {
 
     int max_exponente = (argc > 1) ? atoi(argv[1]) : 8;
     if (max_exponente < 1 || max_exponente > 9) max_exponente = 8;
+
+    if (id == 0) cout << "N  primos_paralelo  primos_serial  t_serial  t_paralelo  speedup" << endl;
 
     int limite = 1;
     for (int n = 1; n <= max_exponente; n++) {
@@ -50,7 +55,16 @@ int main(int argc, char** argv) {
 
         if (id == 0) {
             end = MPI_Wtime();
-            cout << limite << "  " << primos_totales << "  " << end - start << endl;
+            double tiempo_paralelo = end - start;
+
+            // Fuera de la medicion paralela; los demas procesos esperan en el siguiente MPI_Bcast.
+            double start_serial = MPI_Wtime();
+            int primos_serial = contarPrimosSerial(limite);
+            double tiempo_serial = MPI_Wtime() - start_serial;
+
+            cout << limite << "  " << primos_totales << "  " << primos_serial << "  "
+                 << tiempo_serial << "  " << tiempo_paralelo << "  "
+                 << tiempo_serial / tiempo_paralelo << endl;
         }
     }
 
