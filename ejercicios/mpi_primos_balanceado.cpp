@@ -14,7 +14,6 @@ bool esPrimo(int possible_prime) {
 }
 
 // Version serial (la de primos_serial.cpp): un solo proceso revisa todo [2, limite].
-// La corre solo el proceso 0 como linea base para calcular el speedup.
 int contarPrimosSerial(int limite) {
     int primos = 0;
     for (int possible_prime = 2; possible_prime <= limite; possible_prime++)
