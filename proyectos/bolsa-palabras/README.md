@@ -50,8 +50,9 @@ proyectos/bolsa-palabras/
 ├── README.md                  este archivo
 ├── docs/                      descripción del código y evaluación experimental
 ├── src/
+│   ├── comun/bolsa_comun.h    funciones compartidas (descarga, conteo, vocabulario, CSV)
 │   ├── serial/bolsa_serial.cpp
-│   └── mpi/bolsa_mpi.cpp      (por escribir)
+│   └── mpi/bolsa_mpi.cpp      serial + paralelo en una corrida, imprime el speedup
 ├── data/
 │   ├── urls.txt               listado de URLs de prueba
 │   └── validar_sklearn.py     genera la matriz esperada con CountVectorizer para comparar
@@ -67,7 +68,7 @@ g++ -O2 -std=c++17 src/serial/bolsa_serial.cpp -o bolsa_serial
 
 # MPI (Mac: brew install open-mpi; Ubuntu/WSL: sudo apt install openmpi-bin libopenmpi-dev)
 mpic++ -O2 -std=c++17 src/mpi/bolsa_mpi.cpp -o bolsa_mpi
-mpirun -np 4 ./bolsa_mpi data/urls.txt salida_mpi.csv
+mpirun -np 4 ./bolsa_mpi data/urls.txt salida_mpi.csv   # tambien escribe salida_mpi.csv.serial.csv
 ```
 
 ## Notas para la versión MPI
@@ -80,11 +81,11 @@ mpirun -np 4 ./bolsa_mpi data/urls.txt salida_mpi.csv
 ## Checklist
 
 - [ ] Confirmar con el profesor las decisiones abiertas de arriba
-- [ ] Versión serial funcionando, con libros descargados
+- [x] Versión serial validada contra `validar_sklearn.py` con archivos locales (falta con descarga real)
 - [ ] Comparar el CSV serial contra `data/validar_sklearn.py`
-- [ ] Versión MPI funcionando para k libros y q procesos (incluye q mayor que k)
-- [ ] Comparar el CSV de MPI contra el serial (deben ser idénticos)
-- [ ] Imprimir el tiempo serial, el tiempo paralelo y el speedup
+- [x] Versión MPI funcionando para k libros y q procesos (probada con q = 1, 2, 3, 4 y 8 sobre 6 libros)
+- [x] Comparar el CSV de MPI contra el serial (`bolsa_mpi` lo hace al final de cada corrida)
+- [x] Imprimir el tiempo serial, el tiempo paralelo y el speedup
 - [ ] Speedup mayor a 1.2x en varias corridas seguidas
 - [ ] Código documentado (comentarios que expliquen cada bloque)
 - [ ] Descripción del código y evaluación experimental en `docs/`

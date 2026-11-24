@@ -1,10 +1,6 @@
-// Proyecto Clausura: Bolsa de palabras. VERSION SERIAL (esqueleto).
-//
-// Uso:  ./bolsa_serial <urls.txt> <salida.csv>
-//
-// Idea: para cada libro se cuenta cuantas veces aparece cada palabra (un map<string,int> por
-// libro). Luego se arma el vocabulario (la union de todas las palabras, en orden alfabetico)
-// y se escribe el CSV: una fila por libro y una columna por palabra.
+// Funciones compartidas por la version serial y la version MPI del Proyecto Clausura.
+// Estan en un solo lugar para que las dos versiones cuenten y escriban EXACTAMENTE igual
+// (asi el CSV serial y el CSV paralelo son comparables).
 //
 // Regla de limpieza (debe coincidir con data/validar_sklearn.py): se pasa a minusculas y una
 // palabra es una secuencia de 2 o mas caracteres a-z o 0-9 (solo ASCII). Cualquier otro byte
@@ -12,9 +8,10 @@
 //
 // Descarga: se usa curl via std::system y se lee el archivo temporal libro_<i>.txt (i = indice
 // global del libro, para que en MPI dos procesos nunca escriban el mismo archivo).
+#pragma once
 
 #include <cctype>
-#include <chrono>
+#include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -27,7 +24,7 @@
 using namespace std;
 
 // Lee el listado de URLs: una por linea. Se ignoran las lineas vacias y las que empiezan con '#'.
-vector<string> leerUrls(const string& ruta) {
+inline vector<string> leerUrls(const string& ruta) {
     ifstream archivo(ruta);
     if (!archivo.is_open()) {
         cerr << "No se pudo abrir el listado de URLs: " << ruta << "\n";
@@ -48,7 +45,7 @@ vector<string> leerUrls(const string& ruta) {
 }
 
 // Lee un archivo completo a un string.
-string leerArchivo(const string& ruta) {
+inline string leerArchivo(const string& ruta) {
     ifstream archivo(ruta, ios::binary);
     if (!archivo.is_open()) {
         cerr << "No se pudo abrir el archivo: " << ruta << "\n";
@@ -61,7 +58,7 @@ string leerArchivo(const string& ruta) {
 
 // Devuelve el texto completo del libro. Si la fuente empieza con "http" se descarga con curl a
 // libro_<indice>.txt; si no, se trata de una ruta local (sirve para probar sin internet).
-string obtenerTexto(const string& fuente, int indice) {
+inline string obtenerTexto(const string& fuente, int indice) {
     if (fuente.rfind("http", 0) != 0) return leerArchivo(fuente);
 
     // La URL se pasa a un shell: solo se aceptan caracteres seguros para evitar inyeccion.
@@ -87,7 +84,7 @@ string obtenerTexto(const string& fuente, int indice) {
 // Limpia el texto y cuenta cuantas veces aparece cada palabra (regla del encabezado del archivo).
 // Se recorre el texto una vez: se acumulan los caracteres a-z/0-9 (en minuscula) y al encontrar
 // cualquier otro byte se cierra la palabra; si tiene 2 o mas caracteres se cuenta.
-map<string, int> contarPalabras(const string& texto) {
+inline map<string, int> contarPalabras(const string& texto) {
     map<string, int> conteo;
     string palabra;
     auto cerrar = [&]() {
@@ -104,7 +101,7 @@ map<string, int> contarPalabras(const string& texto) {
 
 // Vocabulario: la union de las palabras de todos los libros. Un set de strings queda
 // ordenado alfabeticamente, igual que las columnas de la libreta.
-vector<string> construirVocabulario(const vector<map<string, int>>& conteos) {
+inline vector<string> construirVocabulario(const vector<map<string, int>>& conteos) {
     set<string> unicas;
     for (const auto& c : conteos)
         for (const auto& par : c) unicas.insert(par.first);
@@ -112,7 +109,7 @@ vector<string> construirVocabulario(const vector<map<string, int>>& conteos) {
 }
 
 // Escribe el CSV: primera fila = palabras; despues una fila por libro con sus conteos.
-void escribirCsv(const string& ruta, const vector<string>& vocabulario,
+inline void escribirCsv(const string& ruta, const vector<string>& vocabulario,
                  const vector<map<string, int>>& conteos) {
     ofstream salida(ruta);
     if (!salida.is_open()) {
@@ -132,36 +129,4 @@ void escribirCsv(const string& ruta, const vector<string>& vocabulario,
         }
         salida << "\n";
     }
-}
-
-int main(int argc, char** argv) {
-    if (argc != 3) {
-        cout << "Uso: " << argv[0] << " <urls.txt> <salida.csv>\n";
-        return 1;
-    }
-    string ruta_urls = argv[1];
-    string ruta_salida = argv[2];
-
-    vector<string> urls = leerUrls(ruta_urls);
-    int k = (int)urls.size();
-
-    // Se miden dos tiempos: el total (con descarga) y solo el procesamiento. Cual se reporta como
-    // "el" tiempo es una decision por confirmar con el profesor (ver el README).
-    auto t0 = chrono::steady_clock::now();
-    vector<string> textos(k);
-    for (int i = 0; i < k; i++) textos[i] = obtenerTexto(urls[i], i);
-
-    auto t1 = chrono::steady_clock::now();
-    vector<map<string, int>> conteos(k);
-    for (int i = 0; i < k; i++) conteos[i] = contarPalabras(textos[i]);
-    vector<string> vocabulario = construirVocabulario(conteos);
-    escribirCsv(ruta_salida, vocabulario, conteos);
-    auto t2 = chrono::steady_clock::now();
-
-    double descarga = chrono::duration<double>(t1 - t0).count();
-    double proceso = chrono::duration<double>(t2 - t1).count();
-    cerr << "libros=" << k << " palabras_vocabulario=" << vocabulario.size()
-         << " t_descarga=" << descarga << " t_procesamiento=" << proceso
-         << " t_total=" << descarga + proceso << "\n";
-    return 0;
 }
