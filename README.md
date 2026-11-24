@@ -22,7 +22,7 @@ Apuntes, guías de estudio y proyectos del curso. Repositorio personal para repa
 | MPI bloqueante (parejas i ↔ i+n/2) | `MPI_Send`/`MPI_Recv` sin deadlock | [mpi_bloqueante.cpp](ejercicios/mpi_bloqueante.cpp) |
 | MPI anillo no bloqueante | `MPI_Isend`/`MPI_Irecv` + `MPI_Wait` con los dos vecinos | [mpi_anillo_no_bloqueante.cpp](ejercicios/mpi_anillo_no_bloqueante.cpp) |
 | MPI colectivas | `Bcast`, `Scatter`, `Gather` y `Reduce` (datos de la p27) | [mpi_scatter_gather.cpp](ejercicios/mpi_scatter_gather.cpp) |
-| MPI números primos | `Bcast` + reparto cíclico + `Reduce(MPI_SUM)`; serial y versión balanceada | [mpi_primos.cpp](ejercicios/mpi_primos.cpp), [primos_serial.cpp](ejercicios/primos_serial.cpp), [mpi_primos_balanceado.cpp](ejercicios/mpi_primos_balanceado.cpp) |
+| MPI números primos | `Bcast` + reparto cíclico + `Reduce(MPI_SUM)` con 3 procesos; incluye serial y speedup; versión balanceada aparte | [mpi_primos.cpp](ejercicios/mpi_primos.cpp) ([explicación](ejercicios/mpi_primos.md)), [primos_serial.cpp](ejercicios/primos_serial.cpp), [mpi_primos_balanceado.cpp](ejercicios/mpi_primos_balanceado.cpp) |
 
 ## Proyectos
 
