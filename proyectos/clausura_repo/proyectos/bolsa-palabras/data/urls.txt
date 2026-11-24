@@ -1,0 +1,15 @@
+# Una URL de Project Gutenberg por linea. Las lineas que empiezan con # se ignoran.
+# Formato del texto plano: https://www.gutenberg.org/cache/epub/<numero>/pg<numero>.txt
+# Los numeros de libro NO se pudieron verificar desde el entorno donde se armo el repo (sin acceso
+# a gutenberg.org): comprueben que cada URL abre el libro correcto.
+# pg100 (obras completas de Shakespeare, ~5.5 MB) se deja porque un libro grande ayuda a que se note el speedup.
+https://www.gutenberg.org/cache/epub/100/pg100.txt
+# Los 6 libros del ejemplo del enunciado y la libreta:
+https://www.gutenberg.org/cache/epub/1524/pg1524.txt
+https://www.gutenberg.org/cache/epub/1513/pg1513.txt
+https://www.gutenberg.org/cache/epub/1515/pg1515.txt
+https://www.gutenberg.org/cache/epub/46/pg46.txt
+https://www.gutenberg.org/cache/epub/98/pg98.txt
+https://www.gutenberg.org/cache/epub/730/pg730.txt
+# 1524 Hamlet, 1513 Romeo and Juliet, 1515 The Merchant of Venice,
+# 46 A Christmas Carol, 98 A Tale of Two Cities, 730 Oliver Twist
