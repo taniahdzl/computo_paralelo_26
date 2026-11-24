@@ -24,3 +24,13 @@ Thumbs.db
 proyectos/dbscan/experiments/bin/
 proyectos/dbscan/experiments/datos/
 proyectos/dbscan/experiments/prueba_*.csv
+
+# Libros de prueba generados por proyectos/bolsa-palabras/data/preparar_libros_locales.sh
+proyectos/bolsa-palabras/data/libros_prueba/
+proyectos/bolsa-palabras/data/urls_locales.txt
+
+# Bolsa de palabras: binarios, salidas de corridas y descargas temporales
+proyectos/bolsa-palabras/bolsa_serial
+proyectos/bolsa-palabras/bolsa_mpi
+proyectos/bolsa-palabras/salida_*.csv
+proyectos/bolsa-palabras/libro_*.txt

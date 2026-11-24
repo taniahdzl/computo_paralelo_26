@@ -71,9 +71,14 @@ inline string obtenerTexto(const string& fuente, int indice) {
         }
     }
     string temporal = "libro_" + to_string(indice) + ".txt";
-    string orden = "curl -sSL --fail -o " + temporal + " " + fuente;
+    // Sin reintentos a proposito: Gutenberg bloquea temporalmente (503 con Retry-After, hasta
+    // horas) a quien le hace muchas peticiones automaticas, e insistir alarga el bloqueo.
+    string orden = "curl -sSL --fail --max-time 120 -A \"bolsa-palabras-itam\" -o " + temporal +
+                   " " + fuente;
     if (system(orden.c_str()) != 0) {
-        cerr << "Fallo la descarga de " << fuente << "\n";
+        cerr << "Fallo la descarga de " << fuente << "\n"
+             << "Si fue un 503, Gutenberg bloqueo temporalmente esta IP: espera (ver Retry-After) "
+             << "y mientras tanto prueba con rutas locales (data/urls_locales.txt).\n";
         exit(1);
     }
     string texto = leerArchivo(temporal);
@@ -81,21 +86,29 @@ inline string obtenerTexto(const string& fuente, int indice) {
     return texto;
 }
 
-// Limpia el texto y cuenta cuantas veces aparece cada palabra (regla del encabezado del archivo).
+// Cuenta las palabras de texto[0..n) y las SUMA a 'conteo' (regla del encabezado del archivo).
 // Se recorre el texto una vez: se acumulan los caracteres a-z/0-9 (en minuscula) y al encontrar
 // cualquier otro byte se cierra la palabra; si tiene 2 o mas caracteres se cuenta.
-inline map<string, int> contarPalabras(const string& texto) {
-    map<string, int> conteo;
+// Como suma sobre un conteo existente, sirve para contar un libro por trozos: como los trozos
+// se cortan en un byte separador, contar cada trozo y sumar da lo mismo que contar el libro entero.
+inline void contarPalabrasEn(map<string, int>& conteo, const char* texto, size_t n) {
     string palabra;
     auto cerrar = [&]() {
         if (palabra.size() >= 2) conteo[palabra]++;
         palabra.clear();
     };
-    for (unsigned char c : texto) {
+    for (size_t i = 0; i < n; i++) {
+        unsigned char c = (unsigned char)texto[i];
         if (c < 128 && isalnum(c)) palabra += (char)tolower(c);
         else cerrar();
     }
     cerrar();  // por si el texto termina en medio de una palabra
+}
+
+// Limpia el texto de un libro completo y devuelve cuantas veces aparece cada palabra.
+inline map<string, int> contarPalabras(const string& texto) {
+    map<string, int> conteo;
+    contarPalabrasEn(conteo, texto.data(), texto.size());
     return conteo;
 }
 

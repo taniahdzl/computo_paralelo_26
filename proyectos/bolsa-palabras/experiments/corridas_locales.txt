@@ -1,0 +1,80 @@
+q=1 rep=1
+procesamiento (s)  0.190454   0.211768   0.899352
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.056973 s
+TOTAL (s)          0.213607   0.225733   0.946282
+q=1 rep=2
+procesamiento (s)  0.191516   0.217401   0.880934
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.053425 s
+TOTAL (s)          0.213129   0.23211   0.918224
+q=1 rep=3
+procesamiento (s)  0.182876   0.197866   0.924242
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.052837 s
+TOTAL (s)          0.205251   0.210671   0.974273
+q=1 rep=4
+procesamiento (s)  0.176591   0.213474   0.827225
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.066864 s
+TOTAL (s)          0.196191   0.226779   0.86512
+q=1 rep=5
+procesamiento (s)  0.186403   0.199554   0.934098
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.05537 s
+TOTAL (s)          0.209947   0.212653   0.987275
+q=2 rep=1
+procesamiento (s)  0.179417   0.135868   1.32052
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.051179 s
+TOTAL (s)          0.20204   0.152887   1.3215
+q=2 rep=2
+procesamiento (s)  0.178194   0.136791   1.30267
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.053295 s
+TOTAL (s)          0.201   0.153686   1.30786
+q=2 rep=3
+procesamiento (s)  0.192314   0.141396   1.36011
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.052923 s
+TOTAL (s)          0.216365   0.159308   1.35816
+q=2 rep=4
+procesamiento (s)  0.17644   0.131068   1.34617
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.049408 s
+TOTAL (s)          0.199066   0.148389   1.34151
+q=2 rep=5
+procesamiento (s)  0.180058   0.134449   1.33923
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.049017 s
+TOTAL (s)          0.2029   0.152873   1.32725
+q=4 rep=1
+procesamiento (s)  0.186251   0.118206   1.57565
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057115 s
+TOTAL (s)          0.209507   0.135642   1.54456
+q=4 rep=2
+procesamiento (s)  0.189723   0.113749   1.66791
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.05818 s
+TOTAL (s)          0.212887   0.130956   1.62564
+q=4 rep=3
+procesamiento (s)  0.184257   0.117041   1.57429
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057586 s
+TOTAL (s)          0.207456   0.135089   1.5357
+q=4 rep=4
+procesamiento (s)  0.188448   0.113319   1.66299
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057072 s
+TOTAL (s)          0.211445   0.130457   1.6208
+q=4 rep=5
+procesamiento (s)  0.188408   0.11519   1.63563
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057858 s
+TOTAL (s)          0.211703   0.132277   1.60045
+q=6 rep=1
+procesamiento (s)  0.190374   0.113942   1.6708
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.062991 s
+TOTAL (s)          0.214008   0.132458   1.61567
+q=6 rep=2
+procesamiento (s)  0.198722   0.113193   1.7556
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.062127 s
+TOTAL (s)          0.222187   0.130061   1.70833
+q=6 rep=3
+procesamiento (s)  0.190356   0.113019   1.68428
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.059838 s
+TOTAL (s)          0.213961   0.130301   1.64205
+q=6 rep=4
+procesamiento (s)  0.187081   0.10776   1.73609
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.061215 s
+TOTAL (s)          0.210443   0.125656   1.67475
+q=6 rep=5
+procesamiento (s)  0.190013   0.111936   1.69751
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.060291 s
+TOTAL (s)          0.213507   0.128728   1.65859

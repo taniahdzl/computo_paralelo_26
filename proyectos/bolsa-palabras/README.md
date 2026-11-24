@@ -75,8 +75,12 @@ mpirun -np 4 ./bolsa_mpi data/urls.txt salida_mpi.csv   # tambien escribe salida
 
 - Los archivos temporales de descarga se nombran con el **índice global** del libro
   (`libro_<i>.txt`); si cada proceso usara su propio contador, dos procesos podrían escribir el mismo archivo.
-- Repartir con `i mod q` sirve para empezar, pero los libros pesan muy distinto (uno solo puede ser
-  ~40% del conteo). Medir antes de pasar a un esquema maestro-trabajador.
+- Descarga: reparto por libro (`i mod q`). Conteo: reparto por **trozos de texto** (~256 KB, cortados en
+  un byte separador). Repartir el conteo por libro no balancea: un libro puede ser el 75% del texto
+  (`pg100` pesa más de 5 MB; los otros seis suman menos de 3 MB) y limita el speedup a ~1.2x. Con
+  trozos repartidos por turnos (`MPI_Alltoallv`) el conteo queda parejo. Contar por trozos y sumar
+  da exactamente lo mismo que contar el libro completo.
+- La unión en el proceso 0 (sumar, vocabulario, CSV) es serial y tarda ~0.04 s: es el límite de Amdahl.
 
 ## Checklist
 

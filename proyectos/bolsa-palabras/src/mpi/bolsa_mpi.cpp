@@ -10,13 +10,18 @@
 //   3) El proceso 0 compara las dos matrices e imprime los tiempos y el speedup
 //      (T_serial / T_paralelo).
 //
-// Version paralela:
-//   - Reparto estatico: el proceso r se encarga de los libros i con i % q == r.
-//     Funciona para cualquier k y q (si q > k, los procesos sobrantes no reciben libros).
-//   - Cada proceso descarga (libro_<i>.txt, con el indice GLOBAL i) y cuenta sus libros.
-//   - Cada proceso aplana sus conteos en un buffer de bytes y se juntan en el proceso 0 con
-//     MPI_Gather (tamanos) + MPI_Gatherv (datos).
-//   - El proceso 0 arma el vocabulario y escribe el CSV (esta parte es serial: Amdahl).
+// Version paralela (tres fases):
+//   1) DESCARGA. Reparto estatico por libro: el proceso r descarga los libros i con i % q == r
+//      (archivo libro_<i>.txt, con el indice GLOBAL i). Funciona para cualquier k y q.
+//   2) CONTEO. Repartir por libro no balancea: los libros pesan muy distinto (uno solo puede ser
+//      el 75% del texto) y el proceso que lo recibe tarda mas que todos los demas. Por eso cada
+//      dueno corta sus libros en TROZOS de ~256 KB (en un byte separador, para no partir
+//      palabras) y los reparte por turnos entre los q procesos con MPI_Alltoallv. Cada proceso
+//      cuenta los trozos que recibe y suma los conteos por libro. Contar por trozos y sumar da
+//      exactamente el mismo resultado que contar el libro completo.
+//   3) UNION. Cada proceso aplana sus conteos en bytes y se juntan en el proceso 0 con
+//      MPI_Gather (tamanos) + MPI_Gatherv (datos). El proceso 0 SUMA los conteos de cada libro,
+//      arma el vocabulario y escribe el CSV (esta parte es serial: Amdahl).
 //
 // Funciones compartidas con la version serial: ../comun/bolsa_comun.h
 
@@ -45,7 +50,7 @@ static void empaquetarLibro(string& buf, int indice, const map<string, int>& con
     }
 }
 
-// Lee todos los libros contenidos en 'datos' (de 'n' bytes) y los guarda en conteos[indice].
+// Lee todos los libros contenidos en 'datos' (de 'n' bytes) y SUMA sus conteos en conteos[indice].
 static void desempaquetar(const char* datos, size_t n, vector<map<string, int>>& conteos) {
     size_t pos = 0;
     auto leerInt = [&]() {
@@ -61,10 +66,13 @@ static void desempaquetar(const char* datos, size_t n, vector<map<string, int>>&
         for (int w = 0; w < n_palabras; w++) {
             string palabra(datos + pos);  // hasta el '\0'
             pos += palabra.size() + 1;
-            destino[palabra] = leerInt();
+            destino[palabra] += leerInt();  // suma: un libro puede venir de varios procesos
         }
     }
 }
+
+// Tamano nominal de un trozo de texto (bytes). Mas chico = mejor balance pero mas mensajes.
+static const size_t TROZO = 256 * 1024;
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
@@ -115,12 +123,63 @@ int main(int argc, char** argv) {
     MPI_Barrier(MPI_COMM_WORLD);  // separa descarga de procesamiento para poder medirlas
     double p1 = MPI_Wtime();
 
-    // 2b) contar y aplanar
-    string buffer;
-    for (size_t j = 0; j < mis_libros.size(); j++)
-        empaquetarLibro(buffer, mis_libros[j], contarPalabras(mis_textos[j]));
+    // 2b) repartir trozos de texto entre todos los procesos (MPI_Alltoallv)
+    // Para cada destino se arma un buffer con trozos: [int libro][int largo][bytes del trozo].
+    vector<string> para(q);
+    int turno = rank;  // cada dueno empieza en un destino distinto
+    for (size_t j = 0; j < mis_libros.size(); j++) {
+        const string& t = mis_textos[j];
+        size_t pos = 0;
+        while (pos < t.size()) {
+            size_t fin = min(pos + TROZO, t.size());
+            // alargar el trozo hasta un byte que NO sea a-z/A-Z/0-9, para no partir una palabra
+            while (fin < t.size() && (unsigned char)t[fin] < 128 && isalnum((unsigned char)t[fin])) fin++;
+            string& buf = para[turno % q];
+            agregarInt(buf, mis_libros[j]);
+            agregarInt(buf, (int)(fin - pos));
+            buf.append(t, pos, fin - pos);
+            turno++;
+            pos = fin;
+        }
+    }
+    mis_textos.clear();
 
-    // 2c) juntar en el proceso 0
+    vector<int> env(q), rec(q), env_d(q, 0), rec_d(q, 0);
+    for (int r = 0; r < q; r++) env[r] = (int)para[r].size();
+    MPI_Alltoall(env.data(), 1, MPI_INT, rec.data(), 1, MPI_INT, MPI_COMM_WORLD);
+    string envio, recibo_trozos;
+    int tot_env = 0, tot_rec = 0;
+    for (int r = 0; r < q; r++) {
+        env_d[r] = tot_env;
+        rec_d[r] = tot_rec;
+        tot_env += env[r];
+        tot_rec += rec[r];
+        envio += para[r];
+    }
+    para.clear();
+    recibo_trozos.resize(tot_rec);
+    MPI_Alltoallv(envio.data(), env.data(), env_d.data(), MPI_CHAR,
+                  tot_rec > 0 ? &recibo_trozos[0] : nullptr, rec.data(), rec_d.data(), MPI_CHAR,
+                  MPI_COMM_WORLD);
+    envio.clear();
+
+    // 2c) contar los trozos recibidos, sumando por libro
+    map<int, map<string, int>> mios;
+    for (size_t pos = 0; pos < recibo_trozos.size();) {
+        int libro, largo;
+        memcpy(&libro, recibo_trozos.data() + pos, sizeof(int));
+        memcpy(&largo, recibo_trozos.data() + pos + sizeof(int), sizeof(int));
+        pos += 2 * sizeof(int);
+        contarPalabrasEn(mios[libro], recibo_trozos.data() + pos, (size_t)largo);
+        pos += largo;
+    }
+    recibo_trozos.clear();
+    string buffer;
+    for (const auto& par : mios) empaquetarLibro(buffer, par.first, par.second);
+    MPI_Barrier(MPI_COMM_WORLD);
+    double p15 = MPI_Wtime();  // fin del conteo; empieza la union en el proceso 0
+
+    // 2d) juntar en el proceso 0
     int mi_tam = (int)buffer.size();
     vector<int> tams(q), desplaz(q, 0);
     MPI_Gather(&mi_tam, 1, MPI_INT, tams.data(), 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -136,7 +195,7 @@ int main(int argc, char** argv) {
     MPI_Gatherv(buffer.data(), mi_tam, MPI_CHAR, rank == 0 ? &recibido[0] : nullptr, tams.data(),
                 desplaz.data(), MPI_CHAR, 0, MPI_COMM_WORLD);
 
-    // 2d) el proceso 0 arma la matriz y escribe el CSV
+    // 2e) el proceso 0 suma los conteos, arma la matriz y escribe el CSV
     vector<map<string, int>> conteos_par;
     if (rank == 0) {
         conteos_par.resize(k);
@@ -149,7 +208,7 @@ int main(int argc, char** argv) {
 
     // ---------------------------- 3) RESULTADOS (proceso 0) --------------------------------
     if (rank == 0) {
-        double p_descarga = p1 - p0, p_proceso = p2 - p1;
+        double p_descarga = p1 - p0, p_proceso = p2 - p1, p_union = p2 - p15;
         double t_serial = s_descarga + s_proceso;
         double t_par = p_descarga + p_proceso;
         bool iguales = (conteos_serial == conteos_par);
@@ -161,6 +220,8 @@ int main(int argc, char** argv) {
              << s_descarga / p_descarga << "\n";
         cout << "procesamiento (s)  " << s_proceso << "   " << p_proceso << "   "
              << s_proceso / p_proceso << "\n";
+        cout << "  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): " << p_union
+             << " s\n";
         cout << "TOTAL (s)          " << t_serial << "   " << t_par << "   " << t_serial / t_par
              << "\n";
         cout << "SPEEDUP (total, con descarga) = " << t_serial / t_par << "\n";
