@@ -1,80 +1,315 @@
 q=1 rep=1
-procesamiento (s)  0.190454   0.211768   0.899352
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.056973 s
-TOTAL (s)          0.213607   0.225733   0.946282
+libros=6 procesos=1
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0225183   0.0081349   2.76811
+procesamiento (s)  0.281156   0.305983   0.918863
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0442697 s
+TOTAL (s)          0.303675   0.314118   0.966754
+SPEEDUP (total, con descarga) = 0.966754
 q=1 rep=2
-procesamiento (s)  0.191516   0.217401   0.880934
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.053425 s
-TOTAL (s)          0.213129   0.23211   0.918224
+libros=6 procesos=1
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0235896   0.00603362   3.9097
+procesamiento (s)  0.268262   0.230523   1.16371
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0416057 s
+TOTAL (s)          0.291852   0.236557   1.23375
+SPEEDUP (total, con descarga) = 1.23375
 q=1 rep=3
-procesamiento (s)  0.182876   0.197866   0.924242
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.052837 s
-TOTAL (s)          0.205251   0.210671   0.974273
+libros=6 procesos=1
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0210043   0.0090397   2.32356
+procesamiento (s)  0.295596   0.317083   0.932237
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0550569 s
+TOTAL (s)          0.3166   0.326122   0.970802
+SPEEDUP (total, con descarga) = 0.970802
 q=1 rep=4
-procesamiento (s)  0.176591   0.213474   0.827225
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.066864 s
-TOTAL (s)          0.196191   0.226779   0.86512
+libros=6 procesos=1
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0248185   0.00716204   3.46528
+procesamiento (s)  0.281846   0.251686   1.11983
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0561308 s
+TOTAL (s)          0.306664   0.258848   1.18473
+SPEEDUP (total, con descarga) = 1.18473
 q=1 rep=5
-procesamiento (s)  0.186403   0.199554   0.934098
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.05537 s
-TOTAL (s)          0.209947   0.212653   0.987275
+libros=6 procesos=1
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0232147   0.00735315   3.15711
+procesamiento (s)  0.274743   0.330831   0.830465
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0447649 s
+TOTAL (s)          0.297958   0.338184   0.881054
+SPEEDUP (total, con descarga) = 0.881054
 q=2 rep=1
-procesamiento (s)  0.179417   0.135868   1.32052
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.051179 s
-TOTAL (s)          0.20204   0.152887   1.3215
+libros=6 procesos=2
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0145049   0.00831145   1.74517
+procesamiento (s)  0.279684   0.178057   1.57076
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0560714 s
+TOTAL (s)          0.294189   0.186369   1.57853
+SPEEDUP (total, con descarga) = 1.57853
 q=2 rep=2
-procesamiento (s)  0.178194   0.136791   1.30267
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.053295 s
-TOTAL (s)          0.201   0.153686   1.30786
+libros=6 procesos=2
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0124809   0.00976382   1.27828
+procesamiento (s)  0.233928   0.153433   1.52463
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.061575 s
+TOTAL (s)          0.246409   0.163196   1.50989
+SPEEDUP (total, con descarga) = 1.50989
 q=2 rep=3
-procesamiento (s)  0.192314   0.141396   1.36011
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.052923 s
-TOTAL (s)          0.216365   0.159308   1.35816
+libros=6 procesos=2
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0157605   0.00895926   1.75913
+procesamiento (s)  0.259245   0.177278   1.46236
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0531495 s
+TOTAL (s)          0.275006   0.186238   1.47664
+SPEEDUP (total, con descarga) = 1.47664
 q=2 rep=4
-procesamiento (s)  0.17644   0.131068   1.34617
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.049408 s
-TOTAL (s)          0.199066   0.148389   1.34151
+libros=6 procesos=2
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0247128   0.00779195   3.17158
+procesamiento (s)  0.270638   0.140974   1.91978
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.037689 s
+TOTAL (s)          0.29535   0.148766   1.98534
+SPEEDUP (total, con descarga) = 1.98534
 q=2 rep=5
-procesamiento (s)  0.180058   0.134449   1.33923
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.049017 s
-TOTAL (s)          0.2029   0.152873   1.32725
+libros=6 procesos=2
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0146116   0.00746493   1.95736
+procesamiento (s)  0.255171   0.179471   1.42179
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0580866 s
+TOTAL (s)          0.269783   0.186936   1.44318
+SPEEDUP (total, con descarga) = 1.44318
+q=3 rep=1
+libros=6 procesos=3
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0129967   0.00754171   1.72331
+procesamiento (s)  0.232545   0.105008   2.21454
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0423677 s
+TOTAL (s)          0.245542   0.11255   2.18163
+SPEEDUP (total, con descarga) = 2.18163
+q=3 rep=2
+libros=6 procesos=3
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0108622   0.00728461   1.49111
+procesamiento (s)  0.231284   0.124747   1.85402
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0483907 s
+TOTAL (s)          0.242146   0.132032   1.834
+SPEEDUP (total, con descarga) = 1.834
+q=3 rep=3
+libros=6 procesos=3
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0126698   0.00596852   2.12277
+procesamiento (s)  0.24017   0.10756   2.23289
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0428925 s
+TOTAL (s)          0.25284   0.113529   2.2271
+SPEEDUP (total, con descarga) = 2.2271
+q=3 rep=4
+libros=6 procesos=3
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0122443   0.00853896   1.43393
+procesamiento (s)  0.260628   0.137723   1.89241
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0547283 s
+TOTAL (s)          0.272873   0.146262   1.86564
+SPEEDUP (total, con descarga) = 1.86564
+q=3 rep=5
+libros=6 procesos=3
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00974894   0.0100357   0.971425
+procesamiento (s)  0.252367   0.107851   2.33997
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0410363 s
+TOTAL (s)          0.262116   0.117887   2.22346
+SPEEDUP (total, con descarga) = 2.22346
 q=4 rep=1
-procesamiento (s)  0.186251   0.118206   1.57565
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057115 s
-TOTAL (s)          0.209507   0.135642   1.54456
+libros=6 procesos=4
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0108005   0.00814384   1.32622
+procesamiento (s)  0.221229   0.0980113   2.25718
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0435657 s
+TOTAL (s)          0.23203   0.106155   2.18576
+SPEEDUP (total, con descarga) = 2.18576
 q=4 rep=2
-procesamiento (s)  0.189723   0.113749   1.66791
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.05818 s
-TOTAL (s)          0.212887   0.130956   1.62564
+libros=6 procesos=4
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0163725   0.00662106   2.4728
+procesamiento (s)  0.236361   0.101408   2.3308
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0455721 s
+TOTAL (s)          0.252734   0.108029   2.3395
+SPEEDUP (total, con descarga) = 2.3395
 q=4 rep=3
-procesamiento (s)  0.184257   0.117041   1.57429
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057586 s
-TOTAL (s)          0.207456   0.135089   1.5357
+libros=6 procesos=4
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0117766   0.00642282   1.83356
+procesamiento (s)  0.234613   0.10836   2.16513
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0472861 s
+TOTAL (s)          0.24639   0.114782   2.14658
+SPEEDUP (total, con descarga) = 2.14658
 q=4 rep=4
-procesamiento (s)  0.188448   0.113319   1.66299
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057072 s
-TOTAL (s)          0.211445   0.130457   1.6208
+libros=6 procesos=4
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0103744   0.00712196   1.45668
+procesamiento (s)  0.213052   0.100896   2.11159
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.043855 s
+TOTAL (s)          0.223427   0.108018   2.06841
+SPEEDUP (total, con descarga) = 2.06841
 q=4 rep=5
-procesamiento (s)  0.188408   0.11519   1.63563
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.057858 s
-TOTAL (s)          0.211703   0.132277   1.60045
+libros=6 procesos=4
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00943521   0.0121488   0.776634
+procesamiento (s)  0.217853   0.104262   2.08948
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0454255 s
+TOTAL (s)          0.227288   0.116411   1.95247
+SPEEDUP (total, con descarga) = 1.95247
 q=6 rep=1
-procesamiento (s)  0.190374   0.113942   1.6708
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.062991 s
-TOTAL (s)          0.214008   0.132458   1.61567
+libros=6 procesos=6
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0102282   0.00740638   1.381
+procesamiento (s)  0.236783   0.103509   2.28757
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0521729 s
+TOTAL (s)          0.247012   0.110915   2.22703
+SPEEDUP (total, con descarga) = 2.22703
 q=6 rep=2
-procesamiento (s)  0.198722   0.113193   1.7556
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.062127 s
-TOTAL (s)          0.222187   0.130061   1.70833
+libros=6 procesos=6
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00906313   0.0113497   0.798534
+procesamiento (s)  0.244276   0.10421   2.34408
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0532821 s
+TOTAL (s)          0.253339   0.11556   2.19228
+SPEEDUP (total, con descarga) = 2.19228
 q=6 rep=3
-procesamiento (s)  0.190356   0.113019   1.68428
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.059838 s
-TOTAL (s)          0.213961   0.130301   1.64205
+libros=6 procesos=6
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0107325   0.00915793   1.17193
+procesamiento (s)  0.258238   0.10552   2.44729
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0607147 s
+TOTAL (s)          0.268971   0.114678   2.34544
+SPEEDUP (total, con descarga) = 2.34544
 q=6 rep=4
-procesamiento (s)  0.187081   0.10776   1.73609
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.061215 s
-TOTAL (s)          0.210443   0.125656   1.67475
+libros=6 procesos=6
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00855961   0.0106068   0.806993
+procesamiento (s)  0.261052   0.0930215   2.80636
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0448846 s
+TOTAL (s)          0.269612   0.103628   2.60172
+SPEEDUP (total, con descarga) = 2.60172
 q=6 rep=5
-procesamiento (s)  0.190013   0.111936   1.69751
-  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.060291 s
-TOTAL (s)          0.213507   0.128728   1.65859
+libros=6 procesos=6
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00864448   0.0108533   0.796485
+procesamiento (s)  0.292656   0.120625   2.42617
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0599125 s
+TOTAL (s)          0.3013   0.131478   2.29164
+SPEEDUP (total, con descarga) = 2.29164
+q=8 rep=1
+libros=6 procesos=8
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0135742   0.0077272   1.75668
+procesamiento (s)  0.232237   0.0978987   2.37222
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.055773 s
+TOTAL (s)          0.245811   0.105626   2.32719
+SPEEDUP (total, con descarga) = 2.32719
+q=8 rep=2
+libros=6 procesos=8
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0127292   0.00858038   1.48352
+procesamiento (s)  0.27839   0.109279   2.54751
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0675768 s
+TOTAL (s)          0.291119   0.117859   2.47005
+SPEEDUP (total, con descarga) = 2.47005
+q=8 rep=3
+libros=6 procesos=8
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0108557   0.00853783   1.27148
+procesamiento (s)  0.300775   0.0863008   3.4852
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0499508 s
+TOTAL (s)          0.311631   0.0948386   3.28591
+SPEEDUP (total, con descarga) = 3.28591
+q=8 rep=4
+libros=6 procesos=8
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0245239   0.0135816   1.80567
+procesamiento (s)  0.23647   0.0989298   2.39028
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0510969 s
+TOTAL (s)          0.260993   0.112511   2.31971
+SPEEDUP (total, con descarga) = 2.31971
+q=8 rep=5
+libros=6 procesos=8
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0109367   0.00907053   1.20574
+procesamiento (s)  0.289795   0.119573   2.42359
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0783828 s
+TOTAL (s)          0.300732   0.128643   2.33772
+SPEEDUP (total, con descarga) = 2.33772
+q=11 rep=1
+libros=6 procesos=11
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0146104   0.0105101   1.39013
+procesamiento (s)  0.264682   0.0963696   2.74653
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0598787 s
+TOTAL (s)          0.279292   0.10688   2.61314
+SPEEDUP (total, con descarga) = 2.61314
+q=11 rep=2
+libros=6 procesos=11
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00839355   0.00667088   1.25824
+procesamiento (s)  0.271069   0.116661   2.32356
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0701508 s
+TOTAL (s)          0.279463   0.123332   2.26594
+SPEEDUP (total, con descarga) = 2.26594
+q=11 rep=3
+libros=6 procesos=11
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00985676   0.00954127   1.03307
+procesamiento (s)  0.302962   0.127143   2.38284
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0806309 s
+TOTAL (s)          0.312818   0.136684   2.28862
+SPEEDUP (total, con descarga) = 2.28862
+q=11 rep=4
+libros=6 procesos=11
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.0127407   0.0104902   1.21454
+procesamiento (s)  0.33004   0.109981   3.00089
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0611498 s
+TOTAL (s)          0.34278   0.120471   2.84534
+SPEEDUP (total, con descarga) = 2.84534
+q=11 rep=5
+libros=6 procesos=11
+matrices serial y paralela identicas: si
+                      serial    paralelo   speedup
+descarga (s)       0.00818523   0.00681782   1.20056
+procesamiento (s)  0.263538   0.0908853   2.89968
+  de ello, union serial en el proceso 0 (sumar + vocabulario + CSV): 0.0552641 s
+TOTAL (s)          0.271723   0.0977031   2.78111
+SPEEDUP (total, con descarga) = 2.78111

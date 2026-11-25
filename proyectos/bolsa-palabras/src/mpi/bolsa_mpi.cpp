@@ -80,6 +80,14 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &q);
 
+    // Un error (archivo que no abre, descarga que falla, etc.) debe terminar los q procesos, no
+    // solo el que lo detecta: si uno solo saliera con exit(), los demas se quedarian esperando
+    // para siempre en la siguiente barrera. MPI_Abort manda terminar a todo MPI_COMM_WORLD.
+    terminarPorError = [](int codigo) {
+        MPI_Abort(MPI_COMM_WORLD, codigo);
+        exit(codigo);  // por si MPI_Abort regresa en esta implementacion de MPI
+    };
+
     if (argc != 3) {
         if (rank == 0) cout << "Uso: mpirun -np <q> " << argv[0] << " <urls.txt> <salida.csv>\n";
         MPI_Finalize();

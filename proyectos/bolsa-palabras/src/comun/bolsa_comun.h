@@ -23,12 +23,21 @@
 
 using namespace std;
 
+// Como este archivo lo comparten la version serial (un solo proceso) y la version MPI (q
+// procesos), un error no puede llamar directamente a exit(): en MPI, si un solo proceso termina
+// y los demas se quedan esperando en una barrera, el programa se cuelga en vez de terminar.
+// Por eso los errores pasan por este puntero a funcion: por defecto es exit() (lo que necesita
+// bolsa_serial.cpp); bolsa_mpi.cpp lo reasigna al principio de main() para que llame a
+// MPI_Abort y asi termine TODOS los procesos.
+inline void (*terminarPorError)(int) = [](int codigo) { exit(codigo); };
+
 // Lee el listado de URLs: una por linea. Se ignoran las lineas vacias y las que empiezan con '#'.
 inline vector<string> leerUrls(const string& ruta) {
     ifstream archivo(ruta);
     if (!archivo.is_open()) {
         cerr << "No se pudo abrir el listado de URLs: " << ruta << "\n";
-        exit(1);
+        terminarPorError(1);
+        return {};  // por si terminarPorError no termina el programa (no deberia pasar)
     }
     vector<string> urls;
     string linea;
@@ -49,7 +58,8 @@ inline string leerArchivo(const string& ruta) {
     ifstream archivo(ruta, ios::binary);
     if (!archivo.is_open()) {
         cerr << "No se pudo abrir el archivo: " << ruta << "\n";
-        exit(1);
+        terminarPorError(1);
+        return "";  // por si terminarPorError no termina el programa (no deberia pasar)
     }
     stringstream ss;
     ss << archivo.rdbuf();
@@ -67,7 +77,8 @@ inline string obtenerTexto(const string& fuente, int indice) {
         if (!(isalnum(u) || c == ':' || c == '/' || c == '.' || c == '-' || c == '_' || c == '~' ||
               c == '%' || c == '?' || c == '=' || c == '&')) {
             cerr << "URL con caracteres no permitidos: " << fuente << "\n";
-            exit(1);
+            terminarPorError(1);
+            return "";  // por si terminarPorError no termina el programa (no deberia pasar)
         }
     }
     string temporal = "libro_" + to_string(indice) + ".txt";
@@ -79,7 +90,8 @@ inline string obtenerTexto(const string& fuente, int indice) {
         cerr << "Fallo la descarga de " << fuente << "\n"
              << "Si fue un 503, Gutenberg bloqueo temporalmente esta IP: espera (ver Retry-After) "
              << "y mientras tanto prueba con rutas locales (data/urls_locales.txt).\n";
-        exit(1);
+        terminarPorError(1);
+        return "";  // por si terminarPorError no termina el programa (no deberia pasar)
     }
     string texto = leerArchivo(temporal);
     remove(temporal.c_str());
@@ -127,7 +139,8 @@ inline void escribirCsv(const string& ruta, const vector<string>& vocabulario,
     ofstream salida(ruta);
     if (!salida.is_open()) {
         cerr << "No se pudo crear el archivo de salida: " << ruta << "\n";
-        exit(1);
+        terminarPorError(1);
+        return;  // por si terminarPorError no termina el programa (no deberia pasar)
     }
     for (size_t j = 0; j < vocabulario.size(); j++) {
         if (j > 0) salida << ",";
