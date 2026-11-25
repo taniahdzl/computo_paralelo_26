@@ -29,6 +29,10 @@ proyectos/dbscan/experiments/prueba_*.csv
 proyectos/bolsa-palabras/data/libros_prueba/
 proyectos/bolsa-palabras/data/urls_locales.txt
 
+# Libros parejos generados por proyectos/bolsa-palabras/data/preparar_libros_parejos.sh
+proyectos/bolsa-palabras/data/libros_parejos/
+proyectos/bolsa-palabras/data/urls_parejos.txt
+
 # Bolsa de palabras: binarios, salidas de corridas y descargas temporales
 proyectos/bolsa-palabras/bolsa_serial
 proyectos/bolsa-palabras/bolsa_mpi
