@@ -47,16 +47,24 @@ El enunciado no las define. Mientras no se confirmen, esto es lo que se asume:
 
 ```
 proyectos/bolsa-palabras/
-├── README.md                  este archivo
-├── docs/                      descripción del código y evaluación experimental
+├── README.md                          este archivo
+├── docs/
+│   ├── descripcion-codigo.md          cómo funciona el código y por qué (diseño, MPI_Abort, etc.)
+│   ├── evaluacion-experimental.md     metodología, resultados y gráfica del speedup
+│   └── robustez-sin-libro-dominante.md  prueba aparte: speedup sin un libro grande en el corpus
 ├── src/
-│   ├── comun/bolsa_comun.h    funciones compartidas (descarga, conteo, vocabulario, CSV)
+│   ├── comun/bolsa_comun.h            funciones compartidas (descarga, conteo, vocabulario, CSV)
 │   ├── serial/bolsa_serial.cpp
-│   └── mpi/bolsa_mpi.cpp      serial + paralelo en una corrida, imprime el speedup
+│   └── mpi/bolsa_mpi.cpp              serial + paralelo en una corrida, imprime el speedup
 ├── data/
-│   ├── urls.txt               listado de URLs de prueba
-│   └── validar_sklearn.py     genera la matriz esperada con CountVectorizer para comparar
-└── experiments/               tiempos y gráficas
+│   ├── urls.txt                       listado de URLs de prueba
+│   ├── preparar_libros_locales.sh     corpus local con un libro dominante (sin red)
+│   ├── preparar_libros_parejos.sh     corpus local sin libro dominante (sin red)
+│   └── validar_sklearn.py             genera la matriz esperada con CountVectorizer para comparar
+└── experiments/
+    ├── corridas_locales.txt, resultados_locales.csv, speedup_locales.png   experimento principal
+    ├── corridas_parejo.txt, resultados_parejo.csv, speedup_parejo.png      prueba de robustez
+    └── analizar_corridas.py           resume un archivo de corridas en un CSV y una gráfica
 ```
 
 ## Cómo compilar y correr
@@ -75,24 +83,31 @@ mpirun -np 4 ./bolsa_mpi data/urls.txt salida_mpi.csv   # tambien escribe salida
 
 - Los archivos temporales de descarga se nombran con el **índice global** del libro
   (`libro_<i>.txt`); si cada proceso usara su propio contador, dos procesos podrían escribir el mismo archivo.
-- Descarga: reparto por libro (`i mod q`). Conteo: reparto por **trozos de texto** (~256 KB, cortados en
-  un byte separador). Repartir el conteo por libro no balancea: un libro puede ser el 75% del texto
-  (`pg100` pesa más de 5 MB; los otros seis suman menos de 3 MB) y limita el speedup a ~1.2x. Con
-  trozos repartidos por turnos (`MPI_Alltoallv`) el conteo queda parejo. Contar por trozos y sumar
-  da exactamente lo mismo que contar el libro completo.
-- La unión en el proceso 0 (sumar, vocabulario, CSV) es serial y tarda ~0.04 s: es el límite de Amdahl.
+- Descarga: reparto por libro (`i mod q`). Conteo: reparto por **trozos de texto** (256 KB, cortados en
+  un byte separador). Repartir el conteo por libro **no** balancea: un libro puede ser el 75% del texto
+  (`pg100` pesa más de 5 MB; los otros seis suman menos de 3 MB), y si le tocara entero a un solo
+  proceso, ese proceso tardaría casi lo mismo que la versión serial completa — limitaría el speedup a
+  ~1.2x (el mínimo exigido, apenas). Con trozos repartidos por turnos (`MPI_Alltoallv`) el conteo
+  queda parejo entre todos los procesos sin importar cómo esté repartido el texto entre libros; medido
+  así, el speedup real llega a 1.6x–2.6x (ver `docs/evaluacion-experimental.md`). Contar por trozos y
+  sumar da exactamente lo mismo que contar el libro completo.
+- La unión en el proceso 0 (sumar, vocabulario, CSV) es serial: ~0.05 s en las corridas medidas, sin
+  crecer con `q`. Es el límite de Amdahl del programa.
 
 ## Checklist
 
 - [ ] Confirmar con el profesor las decisiones abiertas de arriba
 - [x] Versión serial validada contra `validar_sklearn.py` con archivos locales (falta con descarga real)
-- [ ] Comparar el CSV serial contra `data/validar_sklearn.py`
-- [x] Versión MPI funcionando para k libros y q procesos (probada con q = 1, 2, 3, 4 y 8 sobre 6 libros)
-- [x] Comparar el CSV de MPI contra el serial (`bolsa_mpi` lo hace al final de cada corrida)
+- [x] Comparar el CSV serial contra `data/validar_sklearn.py` (`bolsa_serial` solo, aparte de `bolsa_mpi`: idénticas, 23,655 palabras)
+- [x] Versión MPI funcionando para k libros y q procesos (probada con q = 1, 2, 3, 4, 6, 8 y 11 sobre 6 libros; q = 11 es el máximo de núcleos físicos en la máquina de prueba)
+- [x] Comparar el CSV de MPI contra el serial (`bolsa_mpi` lo hace al final de cada corrida; 35/35 corridas idénticas en el experimento de abajo)
 - [x] Imprimir el tiempo serial, el tiempo paralelo y el speedup
-- [ ] Speedup mayor a 1.2x en varias corridas seguidas
-- [ ] Código documentado (comentarios que expliquen cada bloque)
-- [ ] Descripción del código y evaluación experimental en `docs/`
+- [x] Speedup mayor a 1.2x en varias corridas seguidas — **con libros locales** (sin descarga real): media 1.6x–2.6x para q ≥ 2, peor repetición de 30 corridas = 1.44x. Ver [`docs/evaluacion-experimental.md`](docs/evaluacion-experimental.md) y, para el caso sin un libro dominante en el corpus, [`docs/robustez-sin-libro-dominante.md`](docs/robustez-sin-libro-dominante.md). Falta confirmar con descarga real (bloqueada por mantenimiento de Gutenberg, ver abajo)
+- [x] Código documentado (comentarios que explican cada bloque y las decisiones de diseño, en `src/` y ampliado en `docs/descripcion-codigo.md`)
+- [x] Descripción del código y evaluación experimental en `docs/` (`descripcion-codigo.md`, `evaluacion-experimental.md`, `robustez-sin-libro-dominante.md`); falta la sección de descarga real una vez que Gutenberg esté disponible
+- [ ] Verificar que las 7 URLs de `data/urls.txt` abren el libro correcto (bloqueado: Gutenberg está en mantenimiento — 503 "Temporarily Down for Maintenance" la última vez que se intentó)
+- [ ] Una corrida con descarga real desde Gutenberg, documentada en `docs/evaluacion-experimental.md` y guardada en `experiments/corridas_red.txt`
+- [x] `MPI_Abort` en vez de `exit()` para los errores dentro de la versión MPI (probado forzando un error real con `-np 4`: ver `docs/descripcion-codigo.md`, sección 5)
 - [ ] Entrega el martes 1 de diciembre de 2026, antes de la clase
 
 ## Calendario sugerido
